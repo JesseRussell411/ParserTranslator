@@ -23,7 +23,7 @@ namespace ParserTranslation
             }
             public ReadOnlyCollection<(string opening, string closing)> Brackets { get; }
             public ReadOnlyCollection<string> Barriers { get; }
-            public bool IncludeEmpty = true;
+            public bool IncludeEmpty { get; } = true;
         }
 
         public class Group
