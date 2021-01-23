@@ -160,6 +160,7 @@ namespace ParserTranslation
         char? c = null;
         public Group NextGroup()
         {
+            // TODO: re-write all of this maybe.
             char prev;
             WrappingType wtype = default;
 
@@ -232,18 +233,23 @@ namespace ParserTranslation
     }
 
     // experimental:
-    public static class sgutil
+    public static class StringGrouperUtils
     {
-        public static IEnumerable<StringGrouper.Group> StringGroup(this string s, IEnumerable<(string opening, string closing)> brackets, IEnumerable<string> barriers= null, bool includeEmpty = false)
+        public static IEnumerable<StringGrouper.Group> GroupText(this IEnumerator<char> s, StringGrouper.ClassParameters parameters)
         {
-            StringGrouper sgr = new StringGrouper(
-                new StringGrouper.ClassParameters(brackets, barriers, includeEmpty),
-                s);
+            // Create Grouper:
+            StringGrouper sg = new StringGrouper(parameters, s);
 
-            List<string> result = new List<string>();
-
+            // Run Grouper:
             StringGrouper.Group g;
-            while ((g = sgr.NextGroup()) != null) yield return g;
+            while ((g = sg.NextGroup()) != null) yield return g;
         }
+        public static IEnumerable<StringGrouper.Group> GroupText(this IEnumerable<char> s, StringGrouper.ClassParameters parameters) =>
+            s.GetEnumerator().GroupText(parameters);
+        public static IEnumerable<StringGrouper.Group> GroupText(this IEnumerator<char> s, IEnumerable<(string opening, string closing)> brackets, IEnumerable<string> barriers = null, bool includeEmpty = false) =>
+            s.GroupText(new StringGrouper.ClassParameters(brackets, barriers, includeEmpty));
+        public static IEnumerable<StringGrouper.Group> GroupText(this IEnumerable<char> s, IEnumerable<(string opening, string closing)> brackets, IEnumerable<string> barriers = null, bool includeEmpty = false) =>
+            s.GetEnumerator().GroupText(new StringGrouper.ClassParameters(brackets, barriers, includeEmpty));
+
     }
 }
